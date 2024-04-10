@@ -25,9 +25,9 @@ class TestLeafNode(unittest.TestCase):
         self.assertEqual(html.to_html(), "<p>This is a paragraph of text.</p>")
         self.assertEqual(html2.to_html(), '<a href="https://www.google.com">Click me!</a>')
 
-#class TestParentNode(unittest.TestCase):
-#    def test_parentnode(self):
-#        html = ParrentNode("p", "Hello World!", ["Hello", "World!"], {"href": "https://www.google.com"})
-#        node = ParrentNode("p",[LeafNode("b", "Bold text"),LeafNode(None, "Normal text"),LeafNode("i", "italic text"),LeafNode(None, "Normal text"),],)
-#        #self.assertEqual(html.to_html(), "<p><b>Bold text</b><i>italic text</i><b>Normal text</b><i>Normal text</i></p>")
-#        self.assertEqual(node.to_html(), "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>")
+class TestParentNode(unittest.TestCase):
+    def test_parentnode(self):
+        #html = ParrentNode("p", "Hello World!", ["Hello", "World!"], {"href": "https://www.google.com"})
+        node = ParrentNode("p",[LeafNode("b", "Bold text"),LeafNode(None, "Normal text"),LeafNode("i", "italic text"),LeafNode(None, "Normal text"),],)
+        #self.assertEqual(html.to_html(), "<p><b>Bold text</b><i>italic text</i><b>Normal text</b><i>Normal text</i></p>")
+        self.assertEqual(node.to_html(), "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>")

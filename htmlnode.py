@@ -17,7 +17,7 @@ class HTMLNode:
         return props_html
     
     def __repr__(self):
-        return str(self.tag) + " ----- " + str(self.value) + " ----- " + str(self.children) + " ----- " + str(self.props)
+        return  "TAG:  " + str(self.tag) + " ----- " + "VALUE:   " + str(self.value) + " ----- " + str(self.children) + " ----- " + str(self.props)
     
 class LeafNode(HTMLNode):
     def __init__(self, tag: str, value: str, props: dict = None):
@@ -27,20 +27,26 @@ class LeafNode(HTMLNode):
     
     def to_html(self):
         if self.props_to_html() == "":
+            if self.tag == None:
+                return f"{self.value}"
             return f"<{self.tag}>{self.value}</{self.tag}>"
+        if self.tag == None:
+            return f"{self.value}"
         return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
 
+#ParrentNode is a node that has children. Ie children list is passed to the parrent node
 class ParrentNode(HTMLNode):
     # doesn't take a value argument, and the children argument is not optional
-    def __init__(self, tag: str = None, children: list = None, props: dict = None):
+    def __init__(self, tag, children: list = None, props: dict = None):
         if children is None:
             raise ValueError("Children cannot be None")
+        if tag is None:
+            raise ValueError("Tag cannot be None")
         super().__init__(tag, None, children, props)
 
     def to_html(self):
-        if self.tag is None:
-            raise ValueError("Tag cannot be None")
-        if self.children is None:
-            raise ValueError("Children cannot be None")
         #I iterated over all the children and called to_html on each, concatenating the results and injecting them between the opening and closing tags of the parent.
-        return f"<{self.tag} {self.props_to_html()}>{''.join([child.to_html() for child in self.children])}</{self.tag}>"
+        html = ""
+        for child in self.children:
+            html += child.to_html()
+        return f"<{self.tag}>" + html + f"</{self.tag}>"
