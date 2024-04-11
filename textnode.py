@@ -6,6 +6,15 @@ text_type_italic = "italic"
 text_type_code = "code"
 text_type_link = "link"
 text_type_image = "image"
+
+delimiter_dict = {
+    "`": text_type_code,
+    "**": text_type_bold,
+    "*": text_type_italic,
+    "[": text_type_link,
+    "![": text_type_image
+}
+
 class TextNode:
 
     def __init__(self, text, text_type, url=None):
@@ -43,7 +52,7 @@ def text_node_to_html_node(text_node):
         raise Exception("Unknown text type: " + text_node.text_type)
     
 def split_nodes_delimiter(old_nodes : TextNode, delimiter, text_type):
-#I don't want to give you full pseudocode, but here are a few tips:
+
 #I created variables like text_type_text="text" and text_type_code="code" to represent the various valid TextNode types.
 #If an "oldnode" is not a text type TextNode, you should just add it to the new list as-is, we only attempt to split text type TextNode objects.
 #If a matching closing delimiter is not found, just raise an exception with a helpful error message, that's invalid Markdown syntax.
@@ -51,18 +60,23 @@ def split_nodes_delimiter(old_nodes : TextNode, delimiter, text_type):
 #The .extend() method was useful to me
     allowed_types = ["text", "bold", "italic", "code", "link", "image"]
     new_nodes = []
-    print(type(old_nodes))
-    if old_nodes.text_type not in allowed_types:
-        raise Exception("Invalid markdown syntax")
-    elif old_nodes.text_type == text_type:        
-        new_nodes.append(old_nodes.text)
-    else:
-        new_nodes.extend(old_nodes.text.split(delimiter))
+    #print(type(old_nodes))
+    for node in old_nodes:
+        if node.text_type not in allowed_types:
+            raise Exception("Invalid markdown syntax")
+        elif node.text_type != allowed_types[0]:        
+            new_nodes.append(TextNode(node.text, None, text_type))
+    #Need to figre out how to get the delimiter and than determine the type of the new node
+        else:    
+            for text in node.text.split(delimiter):
+                new_nodes.extend(split_nodes_delimiter([TextNode(text, text_type)], delimiter, text_type))
+
     return new_nodes
 
 
 node = TextNode("This is text with a `code block` word", text_type_text)
 new_nodes = split_nodes_delimiter([node], "`", text_type_code)
+print(new_nodes)
 #[
 #    TextNode("This is text with a ", text_type_text),
 #    TextNode("code block", text_type_code),

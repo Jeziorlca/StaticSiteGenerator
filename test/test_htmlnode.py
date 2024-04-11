@@ -5,7 +5,7 @@ from htmlnode import HTMLNode, LeafNode, ParrentNode
 class TestHTMLNode(unittest.TestCase):
     def test_htmlnode(self):
         html = HTMLNode("p", "Hello World!", ["Hello", "World!"], {"href": "https://www.google.com"})
-        print(html)
+        #print(html)
     
     def test_props_to_html(self):
         html = HTMLNode("p", "Hello World!", ["Hello", "World!"], {"href": "https://www.google.com"})
@@ -31,3 +31,6 @@ class TestParentNode(unittest.TestCase):
         node = ParrentNode("p",[LeafNode("b", "Bold text"),LeafNode(None, "Normal text"),LeafNode("i", "italic text"),LeafNode(None, "Normal text"),],)
         #self.assertEqual(html.to_html(), "<p><b>Bold text</b><i>italic text</i><b>Normal text</b><i>Normal text</i></p>")
         self.assertEqual(node.to_html(), "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>")
+
+if __name__ == "__main__":
+    unittest.main()
