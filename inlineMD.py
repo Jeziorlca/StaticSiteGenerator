@@ -1,4 +1,5 @@
 from textnode import TextNode
+import re
 
 
 text_type_text = "text"
@@ -17,14 +18,12 @@ delimiter_dict = {
 }
 
 #This function needs to extract ony TextNodes from a given line of MD text.
+#We assume that the delimiter is not nested in other delimiters
+#We assume that we know what the delimiters are
+#Text nodes are always on even indexes after splitting on delimiter
+#if the code block is at the beginning of the line, the first node will be an empty string hence the if condition
 
-#I created variables like text_type_text="text" and text_type_code="code" to represent the various valid TextNode types.
-#If an "oldnode" is not a text type TextNode, you should just add it to the new list as-is, we only attempt to split text type TextNode objects.
-#If a matching closing delimiter is not found, just raise an exception with a helpful error message, that's invalid Markdown syntax.
-#The .split() method was useful to me
-#The .extend() method was useful to me
-
-def split_nodes_delimiter(old_nodes : TextNode, delimiter, text_type):
+def split_nodes_delimiter(old_nodes : list[TextNode], delimiter, text_type):
 
     allowed_types = ["text", "bold", "italic", "code", "link", "image"]
     #delimiter_dict ---- exists on top of the file
@@ -42,7 +41,7 @@ def split_nodes_delimiter(old_nodes : TextNode, delimiter, text_type):
             if sections[i] == "":
                 continue
             if i %2 == 0:
-                splited_node.append(TextNode(sections[1],text_type_text))
+                splited_node.append(TextNode(sections[i],text_type_text))
             else:
                 splited_node.append(TextNode(sections[i],text_type))
         new_nodes.extend(splited_node)
@@ -50,12 +49,19 @@ def split_nodes_delimiter(old_nodes : TextNode, delimiter, text_type):
 
 
 
-#This is what we want!
-node = TextNode("This is text with a `code block` word", text_type_text)
-new_nodes = split_nodes_delimiter([node], "`", text_type_code)
-print(new_nodes)
-#[
-#    TextNode("This is text with a ", text_type_text),
-#    TextNode("code block", text_type_code),
-#    TextNode(" word", text_type_text),
-#]
+#------------------------------------------------------------------------------
+def extract_markdown_images(text):
+    images = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+    return images
+
+def extract_markdown_links(text):
+    links = re.findall(r"\[(.*?)\]\((.*?)\)", text)
+    return links
+
+def split_nodes_image(old_nodes:list[TextNode]):
+    pass
+
+
+
+def split_nodes_link(old_nodes:list[TextNode]):
+    pass
