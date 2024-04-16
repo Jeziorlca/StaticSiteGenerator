@@ -1,4 +1,7 @@
 import re
+from htmlnode import HTMLNode, ParrentNode, LeafNode
+from inlineMD import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, text_to_textnode
+from textnode import text_node_to_html_node
 #MD Block types:
 block_type_paragraph = "paragraph"  # \n just plain text
 block_type_heading = "heading" #starts with 1-6 # ## ### ##### ###### ###### + space
@@ -20,14 +23,53 @@ def markdown_to_block(text):
     return new_blocks
 
 def block_to_blocktype(block):
+    lines = block.split("\n")
+       
     if re.match(re_heading, block):
         return block_type_heading
-    if block.startswith("```") and block.endswith("```"):
+    
+    if len(lines) > 1 and lines[0].startswith("```") and lines[-1].endswith("```"):
         return block_type_code
+    
     if block.startswith(">"):
+        for line in lines:
+            if not line.startswith(">"):
+                return block_type_paragraph
         return block_type_quote
-    if block.startswith("* ") or block.startswith("- "):
+    
+    if block.startswith("* "):
+        for line in lines:
+            if not line.startswith("* "):
+                return block_type_paragraph
         return block_type_unordered_list
-    if re.match(r"^\d+\.", block):
+
+    if block.startswith("- "):
+        for line in lines:
+            if not line.startswith("- "):
+                return block_type_paragraph
+        return block_type_unordered_list
+
+    if block.startswith("1. "):
+        i = 1
+        for line in lines:
+            if not line.startswith(f"{i}. "):
+                return block_type_paragraph
+            i += 1
         return block_type_ordered_list
     return block_type_paragraph
+
+#Now you need to take a block and its "type" and convert it into an HTMLNode (I recommend a separate function for each type of block).
+
+def text_to_children(text):
+    text_nodes = text_to_textnode(text)
+    children = []
+    for text_node in text_nodes:
+        HTMLNode = text_node_to_html_node(text_node)
+        children.append(HTMLNode)
+    return ParrentNode("div", children, None)
+
+def paragraph_to_htmlnode(block):
+    lines = block.split("\n")
+    paragtaph = " ".join(lines)
+    children = text_to_children(paragtaph)
+    return ParrentNode("p", children, None)
