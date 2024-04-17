@@ -152,3 +152,7 @@ def heading_to_htmlnode(block):
     content = "".join(new_lines)
     children = text_to_children(content)
     return ParrentNode(f"h{heading_level}", children, None)
+
+print(type(heading_to_htmlnode("## This is a heading")) )
+print(type(ParrentNode("h2", LeafNode(None, "This is a heading", None))))
+print(heading_to_htmlnode("## This is a heading") == ParrentNode("h2", LeafNode(None, "This is a heading", None)))

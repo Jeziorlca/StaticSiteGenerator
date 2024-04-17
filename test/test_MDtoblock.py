@@ -1,6 +1,8 @@
 import unittest
 
 from MDtoBlock import *
+from htmlnode import *
+from textnode import *
 
 class test_markdown_to_block(unittest.TestCase):
     maxDiff = None
@@ -67,5 +69,4 @@ This is the same paragraph on a new line
         test7 = "####### This is a sub-sub-sub-sub-sub-sub-heading"
         test8 = "######## This is a sub-sub-sub-sub-sub-sub-sub-heading"
 
-        #self.assertEqual(heading_to_htmlnode(test1), ParrentNode("h1", "<h1><div>This is a heading</div></h1>", None)) 
-        pass
+        self.assertEqual(heading_to_htmlnode(test1), ParrentNode("h1",[LeafNode(None,"This is a heading", None)], None))
