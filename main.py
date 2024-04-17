@@ -14,9 +14,13 @@ def copy_dir(src, dest):
     else:
         shutil.copy2(src, dest)
 
+def main():
 
-if os.path.exists("public"):
-    shutil.rmtree("public/")
+    print("Removing public directory...")
+    if os.path.exists("public"):
+        shutil.rmtree("public/")
 
-copy_dir("static", "public")
+    print("Copying static directory to public...") 
+    copy_dir("static", "public")
 
+main()

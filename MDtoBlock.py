@@ -1,7 +1,7 @@
 import re
-from htmlnode import *
-from inlineMD import *
-from textnode import *
+from htmlnode import ParrentNode
+from inlineMD import text_to_textnode
+from textnode import text_node_to_html_node
 #MD Block types:
 block_type_paragraph = "paragraph"  # \n just plain text
 block_type_heading = "heading" #starts with 1-6 # ## ### ##### ###### ###### + space
@@ -153,6 +153,6 @@ def heading_to_htmlnode(block):
     children = text_to_children(content)
     return ParrentNode(f"h{heading_level}", children, None)
 
-print(type(heading_to_htmlnode("## This is a heading")) )
-print(type(ParrentNode("h2", LeafNode(None, "This is a heading", None))))
-print(heading_to_htmlnode("## This is a heading") == ParrentNode("h2", LeafNode(None, "This is a heading", None)))
+#print(type(heading_to_htmlnode("## This is a heading")) )
+#print(type(ParrentNode("h2", LeafNode(None, "This is a heading", None))))
+#print(heading_to_htmlnode("## This is a heading") == ParrentNode("h2", LeafNode(None, "This is a heading", None)))
