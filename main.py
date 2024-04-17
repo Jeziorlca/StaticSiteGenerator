@@ -1,5 +1,3 @@
-from textnode import TextNode
-from htmlnode import HTMLNode, ParrentNode, LeafNode
 import os
 import shutil
 
