@@ -1,7 +1,7 @@
 import re
-from htmlnode import HTMLNode, ParrentNode, LeafNode
-from inlineMD import split_nodes_delimiter, extract_markdown_images, extract_markdown_links, text_to_textnode
-from textnode import text_node_to_html_node
+from htmlnode import *
+from inlineMD import *
+from textnode import *
 #MD Block types:
 block_type_paragraph = "paragraph"  # \n just plain text
 block_type_heading = "heading" #starts with 1-6 # ## ### ##### ###### ###### + space
@@ -18,7 +18,9 @@ def markdown_to_block(text):
     blocks = text.split("\n\n")
     new_blocks = []
     for block in blocks:
-        block.strip()
+        if block == "":
+            continue
+        block = block.strip()
         new_blocks.append(block)
     return new_blocks
 
@@ -60,16 +62,93 @@ def block_to_blocktype(block):
 
 #Now you need to take a block and its "type" and convert it into an HTMLNode (I recommend a separate function for each type of block).
 
+def markdown_to_html_node(markdown):
+    blocks = markdown_to_block(markdown)
+    children = []
+    for block in blocks:
+        html_node = block_to_html_node(block)
+        children.append(html_node)
+    return ParrentNode("div", children, None)
+
+
+def block_to_html_node(block):
+    block_type = block_to_blocktype(block)
+    if block_type == block_type_paragraph:
+        return paragraph_to_htmlnode(block)
+    if block_type == block_type_heading:
+        return heading_to_htmlnode(block)
+    if block_type == block_type_code:
+        return code_to_htmlnode(block)
+    if block_type == block_type_ordered_list:
+        return ordered_list_to_htmlnode(block)
+    if block_type == block_type_unordered_list:
+        return unordered_list_to_htmlnode(block)
+    if block_type == block_type_quote:
+        return quote_to_htmlnode(block)
+    raise ValueError("Invalid block type")
+
 def text_to_children(text):
     text_nodes = text_to_textnode(text)
     children = []
     for text_node in text_nodes:
         HTMLNode = text_node_to_html_node(text_node)
         children.append(HTMLNode)
-    return ParrentNode("div", children, None)
+    return children
 
 def paragraph_to_htmlnode(block):
     lines = block.split("\n")
-    paragtaph = " ".join(lines)
-    children = text_to_children(paragtaph)
+    paragraph = " ".join(lines)
+    children = text_to_children(paragraph)
     return ParrentNode("p", children, None)
+
+def unordered_list_to_htmlnode(block):
+    lines = block.split("\n")
+    html_items = []
+    for line in lines:
+        text = line[2:]
+        children = text_to_children(text)
+        html_items.append(ParrentNode("li", children))
+    return ParrentNode("ul", html_items, None)
+
+def ordered_list_to_htmlnode(block):
+    lines = block.split("\n")
+    html_items = [] #trzeba obciąć /d+.
+    for item in lines:
+        text = item.split(". ", 1)[1]
+        children = text_to_children(text)
+        html_items.append(ParrentNode("li", children))
+    return ParrentNode("ol", html_items, None)
+
+def code_to_htmlnode(block):
+    # <pre><code>text</code></pre>
+    if block.startswith("```") or not block.endswith("```"):
+        raise ValueError("invalid code block")
+    text = block[4:-3]
+    children = text_to_children(text)
+    code = ParrentNode("code", children ,None)
+    return ParrentNode("pre", [code], None)
+        
+def quote_to_htmlnode(block):
+    #contend of blockquote is just a paragaraph with stripped ">" at the begining
+    lines = block.split("\n")
+    new_lines = []
+    for line in lines:
+        if not line.startswith(">"):
+            raise ValueError ("Invalid line start")    
+        new_lines.append(line.lstrip(">").strip())
+    content = " ".join(new_lines)
+    children = text_to_children(content)
+    return ParrentNode("blockquote", children, None)
+
+def heading_to_htmlnode(block):
+    heading_level = len(re.findall(re_heading, block)[0])
+    lines = block.split("\n")
+    new_lines = []
+    for line in lines:
+        if not line.startswith("#"):
+            raise ValueError ("Invalid line start")
+        new_line = line.lstrip("#").strip()
+        new_lines.append(new_line)
+    content = "".join(new_lines)
+    children = text_to_children(content)
+    return ParrentNode(f"h{heading_level}", children, None)

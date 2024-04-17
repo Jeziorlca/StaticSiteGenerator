@@ -37,16 +37,35 @@ class LeafNode(HTMLNode):
 #ParrentNode is a node that has children. Ie children list is passed to the parrent node
 class ParrentNode(HTMLNode):
     # doesn't take a value argument, and the children argument is not optional
-    def __init__(self, tag, children: list = None, props: dict = None):
-        if children is None:
-            raise ValueError("Children cannot be None")
-        if tag is None:
-            raise ValueError("Tag cannot be None")
+    def __init__(self, tag, children, props: dict = None):
         super().__init__(tag, None, children, props)
 
     def to_html(self):
+        if self.tag is None:
+            raise ValueError("Invalid HTML: no tag")
+        if self.children is None:
+            raise ValueError("Invalid HTML: no children")
         #I iterated over all the children and called to_html on each, concatenating the results and injecting them between the opening and closing tags of the parent.
         html = ""
         for child in self.children:
             html += child.to_html()
-        return f"<{self.tag}>" + html + f"</{self.tag}>"
+        return f"<{self.tag}{self.props_to_html()}>{html}</{self.tag}>"
+    def __repr__(self):
+        return f"ParentNode({self.tag}, children: {self.children}, {self.props})"
+
+class ParentNode(HTMLNode):
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag, None, children, props)
+
+    def to_html(self):
+        if self.tag is None:
+            raise ValueError("Invalid HTML: no tag")
+        if self.children is None:
+            raise ValueError("Invalid HTML: no children")
+        children_html = ""
+        for child in self.children:
+            children_html += child.to_html()
+        return f"<{self.tag}{self.props_to_html()}>{children_html}</{self.tag}>"
+
+    def __repr__(self):
+        return f"ParentNode({self.tag}, children: {self.children}, {self.props})"

@@ -1,8 +1,9 @@
 import unittest
 
-from MDtoBlock import markdown_to_block, block_to_blocktype
+from MDtoBlock import *
 
 class test_markdown_to_block(unittest.TestCase):
+    maxDiff = None
     def test_markdown_to_block(self):
         MD = """This is **bolded** paragraph
 
@@ -55,3 +56,16 @@ This is the same paragraph on a new line
         self.assertEqual(block_to_blocktype(test14), "paragraph")
         self.assertEqual(block_to_blocktype(test15), "paragraph")
         self.assertEqual(block_to_blocktype(test16), "paragraph") #this is wrong in context of true MD ordered list, but for now it must suffice
+
+    def test_heading_to_htmlnode(self):
+        test1 = "# This is a heading"
+        test2 = "## This is a sub-heading"
+        test3 = "### This is a sub-sub-heading"
+        test4 = "#### This is a sub-sub-sub-heading"
+        test5 = "##### This is a sub-sub-sub-sub-heading"
+        test6 = "###### This is a sub-sub-sub-sub-sub-heading"
+        test7 = "####### This is a sub-sub-sub-sub-sub-sub-heading"
+        test8 = "######## This is a sub-sub-sub-sub-sub-sub-sub-heading"
+
+        #self.assertEqual(heading_to_htmlnode(test1), ParrentNode("h1", "<h1><div>This is a heading</div></h1>", None)) 
+        pass
