@@ -121,7 +121,7 @@ def ordered_list_to_htmlnode(block):
 
 def code_to_htmlnode(block):
     # <pre><code>text</code></pre>
-    if block.startswith("```") or not block.endswith("```"):
+    if not block.startswith("```") or not block.endswith("```"):
         raise ValueError("invalid code block")
     text = block[4:-3]
     children = text_to_children(text)
@@ -141,17 +141,29 @@ def quote_to_htmlnode(block):
     return ParrentNode("blockquote", children, None)
 
 def heading_to_htmlnode(block):
-    heading_level = len(re.findall(re_heading, block)[0])
-    lines = block.split("\n")
-    new_lines = []
-    for line in lines:
-        if not line.startswith("#"):
-            raise ValueError ("Invalid line start")
-        new_line = line.lstrip("#").strip()
-        new_lines.append(new_line)
-    content = "".join(new_lines)
-    children = text_to_children(content)
-    return ParrentNode(f"h{heading_level}", children, None)
+    level = 0
+    for char in block:
+        if char == "#":
+            level += 1
+        else:
+            break
+    if level + 1 >= len(block):
+        raise ValueError(f"Invalid heading level: {level}")
+    text = block[level + 1 :]
+    children = text_to_children(text)
+    return ParrentNode(f"h{level}", children)
+    #print(block)
+    #heading_level = len(re.findall(re_heading, block)[0])
+    #lines = block.split("\n")
+    #new_lines = []
+    #for line in lines:
+    #    if not line.startswith("#"):
+    #        raise ValueError ("Invalid line start")
+    #    new_line = line.lstrip("#").strip()
+    #    new_lines.append(new_line)
+    #content = "".join(new_lines)
+    #children = text_to_children(content)
+    #return ParrentNode(f"h{heading_level}", children, None)
 
 #print(type(heading_to_htmlnode("## This is a heading")) )
 #print(type(ParrentNode("h2", LeafNode(None, "This is a heading", None))))

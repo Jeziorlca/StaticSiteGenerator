@@ -1,5 +1,11 @@
 import os
 import shutil
+from genContent import genPage
+
+dir_path_static = r"C:\Users\jezio\Code\BootDev\StaticSiteGenerator\static"
+dir_path_public = r"C:\Users\jezio\Code\BootDev\StaticSiteGenerator\public"
+dir_path_content = r"C:\Users\jezio\Code\BootDev\StaticSiteGenerator\content"
+template_path = r"C:\Users\jezio\Code\BootDev\StaticSiteGenerator\template.html"
 
 def copy_dir(src, dest):
     if os.path.isdir(src):
@@ -13,6 +19,7 @@ def copy_dir(src, dest):
         shutil.copy2(src, dest)
 
 def main():
+    print(os.getcwd())
 
     print("Removing public directory...")
     if os.path.exists("public"):
@@ -20,5 +27,12 @@ def main():
 
     print("Copying static directory to public...") 
     copy_dir("static", "public")
+
+    #Generating page
+    genPage(
+        os.path.join(dir_path_content, "index.md"),
+        os.path.join(dir_path_public, "index.html"),
+        template_path,
+    )
 
 main()
