@@ -1,11 +1,11 @@
 import os
 import shutil
-from genContent import genPage
+from genContent import genPage, generate_pages_recursive
 
-dir_path_static = r"C:\Users\jezio\Code\BootDev\StaticSiteGenerator\static"
-dir_path_public = r"C:\Users\jezio\Code\BootDev\StaticSiteGenerator\public"
-dir_path_content = r"C:\Users\jezio\Code\BootDev\StaticSiteGenerator\content"
-template_path = r"C:\Users\jezio\Code\BootDev\StaticSiteGenerator\template.html"
+dir_path_static = "./static"
+dir_path_public = "./public"
+dir_path_content = "./content"
+template_path = "./template.html"
 
 def copy_dir(src, dest):
     if os.path.isdir(src):
@@ -29,10 +29,10 @@ def main():
     copy_dir("static", "public")
 
     #Generating page
-    genPage(
-        os.path.join(dir_path_content, "index.md"),
-        os.path.join(dir_path_public, "index.html"),
-        template_path,
-    )
-
+    #genPage(
+    #    os.path.join(dir_path_content, "index.md"),
+    #    os.path.join(dir_path_public, "index.html"),
+    #    template_path,
+    #)
+    generate_pages_recursive(dir_path_content, template_path, dir_path_public)
 main()
